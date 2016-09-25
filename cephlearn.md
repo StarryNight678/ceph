@@ -30,11 +30,13 @@ Ceph 的条带化行为（如果划分条带和如何写入条带）受三个参
 order：RADOS Object 的大小为 2^[order] bytes。默认的 oder 为 22，这时候对象大小为4MB。最小 4k，最大 32M，默认 4M.
 stripe_unit：条带（stripe unit）的大小。每个 [stripe_unit] 的连续字节会被连续地保存到同一个对象中，client 写满 stripe unit 大小的数据后，接着去下一个 object 中写下一个 stripe unit 大小的数据。默认为 1，此时一个 stripe 就是一个 object。
 stripe_count：在分别写入了 [stripe_unit] 个字节到 [stripe_count] 个对象后，ceph 又重新从一个新的对象开始写下一个条带，直到该对象达到了它的最大大小。这时候，ceph 转移到下 [stripe_unit] 字节。默认为 object site。
+
 以下图为例：
-（1）RBD image 会被保存在总共 8 个 RADOS object （计算方式为 client data size 除以 2^[order]）中。
-（2）stripe_unit 为 object size 的四分之一，也就是说每个 object 包含 4 个 stripe。
-（3）stripe_count 为 4，即每个 object set 包含四个 object。这样，client 以 4 为一个循环，向一个 object set 中的每个 object 依次写入 stripe，写到第 16 个 stripe 后，按照同样的方式写第二个 object set。
+1. RBD image 会被保存在总共 8 个 RADOS object （计算方式为 client data size 除以 2^[order]）中。
+2. stripe_unit 为 object size 的四分之一，也就是说每个 object 包含 4 个 stripe。
+3. stripe_count 为 4，即每个 object set 包含四个 object。这样，client 以 4 为一个循环，向一个 object set 中的每个 object 依次写入 stripe，写到第 16 个 stripe 后，按照同样的方式写第二个 object set。
 
 
 ![示例图片](http://images2015.cnblogs.com/blog/697113/201509/697113-20150925180305803-50366273.jpg)
-  默认的情况下，[stripe_unit] 等于 object size；stripe_count 为1。意味着 ceph client 在将第一个 object 写满后再去写下一个 object。要设置其他的 [stripe_unit] 值，需要Ceph v0.53 版本及以后版本对 STRIPINGV2 的支持以及使用 format 2 image 格式。
+
+默认的情况下，[stripe_unit] 等于 object size；stripe_count 为1。意味着 ceph client 在将第一个 object 写满后再去写下一个 object。要设置其他的 [stripe_unit] 值，需要Ceph v0.53 版本及以后版本对 STRIPINGV2 的支持以及使用 format 2 image 格式。
