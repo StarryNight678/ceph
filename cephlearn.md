@@ -1,4 +1,4 @@
-
+# ceph重点
 
 ## 安装时指定日志盘
 
@@ -11,8 +11,10 @@
 
 ## 性能优化
 [Ceph性能优化总结(v0.94)](http://xiaoquqi.github.io/blog/2015/06/28/ceph-performance-optimization-summary/)
+
 - SSD
 由于Journal在向数据盘写入数据时Block后续请求，所以Journal的加入并未呈现出想象中的性能提升，但是的确会对Latency有很大的改善。
+
 - 软件优化
 
 	Kernel pid max
@@ -40,3 +42,43 @@ stripe_count：在分别写入了 [stripe_unit] 个字节到 [stripe_count] 个�
 ![示例图片](http://images2015.cnblogs.com/blog/697113/201509/697113-20150925180305803-50366273.jpg)
 
 默认的情况下，[stripe_unit] 等于 object size；stripe_count 为1。意味着 ceph client 在将第一个 object 写满后再去写下一个 object。要设置其他的 [stripe_unit] 值，需要Ceph v0.53 版本及以后版本对 STRIPINGV2 的支持以及使用 format 2 image 格式。
+
+
+## 块设备的优势
+
+![块](http://www.ssdfans.com/wp-content/uploads/2015/03/032415_1102_Ceph1.gif)
+
+因为 Linux 显示文件系统的一个公共界面（通过虚拟文件系统交换机 [VFS]），Ceph 的用户透视图就是透明的。
+
+
+Linux 虚拟系统文件交换器剖析
+[VFS](http://www.ibm.com/developerworks/cn/linux/l-virtual-filesystem-switch/)
+
+
+OpenStack 解决方案的核心和附加组件
+
+![](http://www.ibm.com/developerworks/cn/cloud/library/cl-openstack-cloud/figure2.gif)
+
+## cephfs和RBD区别
+
+
+> CephFS is a filesystem, rbd is a block device.  CephFS is a lot like NFS;
+> it's a filesystem shared over the network where different machines can
+> access it all at the same time.  RBD is more like a hard disk image, shared
+> over the network.  It's easy to put a normal filesystem (like ext2) on top
+> of it and mount it on a computer, but if you mount the same RBD device on
+> multiple computers at once then Really Bad Things are going to happen to
+> the filesystem.
+>
+> In general, if you want to share a bunch of files between multiple
+> machines, then CephFS is your best bet.  If you want to store a disk image,
+> perhaps for use with virtual machines, then you want RBD.  If you want
+> storage that is mostly compatible with Amazon's S3, then use radosgw.
+
+
+RBD更适合云计算环境
+提供2中类型image
+
+- A Kernel module, part of the main line since 2010, that exposes block devices to a system (same way as iSCSI does)
+- A QEMU driver to build virtual machine disks on top of RBD (attaching devices and booting from device)
+
