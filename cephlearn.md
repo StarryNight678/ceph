@@ -82,3 +82,14 @@ RBD更适合云计算环境
 - A Kernel module, part of the main line since 2010, that exposes block devices to a system (same way as iSCSI does)
 - A QEMU driver to build virtual machine disks on top of RBD (attaching devices and booting from device)
 
+亚马逊 [EFS](https://aws.amazon.com/cn/efs/) 与 [EBS](https://aws.amazon.com/cn/ebs/)
+
+问：应该分别在什么情况下使用 Amazon EFS、Amazon Simple Storage Service (S3) 和 Amazon Elastic Block Store (EBS)？[亚马逊回答](https://aws.amazon.com/cn/efs/faq/)
+
+ Amazon Web Services (AWS) 提供多种云存储服务来支持各种存储工作负载。
+
+- Amazon EFS 是一项与 Amazon EC2 配合使用的文件存储服务。Amazon EFS 可以提供文件系统界面、文件系统访问语义（例如强一致性和文件锁定）以及可供多达数千个 Amazon EC2 实例同时访问的存储。数千个EC2可以同时连接一个文件系统.吞吐量大.价格贵.
+
+- Amazon EBS 是一项与 Amazon EC2 配合使用的数据块级存储服务。对于需要从单个 EC2 实例低延迟访问数据的工作负载，Amazon EBS 可为其提供高性能服务。延迟低.价格便宜.
+
+- Amazon S3 是一项对象存储服务。Amazon S3 通过可以在任何地方访问的 Internet API 来提供数据访问。
